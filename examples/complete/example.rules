@@ -1,0 +1,1 @@
+alert tcp any any -> any [443,465] (msg:"Detected non-TLS on TLS port"; flow:to_server; app-layer-protocol:!tls; threshold: type limit, track by_src, seconds 90, count 1; sid:210003; rev:1;)
