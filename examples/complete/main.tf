@@ -15,9 +15,13 @@ variable "environment" {
 }
 
 module "network_firewall" {
-  source        = "../../"
+  source  = "mattyait/network-firewall/aws"
+  version = "0.1.0"
+  # insert the 3 required variables here
+  # source        = "../../"
   firewall_name = "${var.environment}-example"
   vpc_id        = data.aws_vpc.default.id
+
 
   #Passing Individual Subnet ID to have required endpoint
   subnet_mapping = [
