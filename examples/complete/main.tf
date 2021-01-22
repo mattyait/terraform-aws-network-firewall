@@ -15,10 +15,7 @@ variable "environment" {
 }
 
 module "network_firewall" {
-  source  = "mattyait/network-firewall/aws"
-  version = "0.1.0"
-  # insert the 3 required variables here
-  # source        = "../../"
+  source        = "../../"
   firewall_name = "${var.environment}-example"
   vpc_id        = data.aws_vpc.default.id
 
