@@ -76,11 +76,21 @@ AWS Network Firewall Module which creates
 
 ## Inputs
 
-| Name | Description |
-|------|-------------|
-|       |            |
+| Name                          | Description                                               |
+|------                         |-------------                                              |
+|   firewall_name               | firewall name                                             |
+|   vpc_id                      |    VPC ID                                                 |
+| subnet_mapping                | Subnet ids mapping to have individual firewall endpoint   |
+| domain_stateful_rule_group    | Config for domain type stateful rule group                |
+| fivetuple_stateful_rule_group | Config for 5-tuple type stateful rule group               |
+| suricata_stateful_rule_group  | Config for Suricata type stateful rule group              |
+| stateless_rule_group          | Config for stateless rule group                           |
+|   tags                        | tags to add to all resources                              |
+
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-|       |            |
+| Name                          | Description                                               |
+|------                         |-------------                                              |
+| network_firewall_arn_out      | Network Firewall ARN from network_firewall module         |
+| network_firewall_endpoint_id  | Network Firewall endpoint id List                         |
+| network_firewall_id_out       | Network Firewall ID from network_firewall module          |
