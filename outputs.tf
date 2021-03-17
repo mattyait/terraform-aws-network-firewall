@@ -8,12 +8,7 @@ output "network_firewall_arn_out" {
   value       = aws_networkfirewall_firewall.main.arn
 }
 
-
-locals {
-  sync_states_out = concat(aws_networkfirewall_firewall.main.firewall_status[*].sync_states[*],[""])[0]
-}
-
 output "network_firewall_endpoint_id" {
   description = "Created Network Firewall endpoint id"
-  value       = local.sync_states_out.*.attachment[*]
+  value       = flatten(aws_networkfirewall_firewall.main.firewall_status[*].sync_states[*].*.attachment[*])[*].endpoint_id
 }
