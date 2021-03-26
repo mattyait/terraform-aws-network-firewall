@@ -25,6 +25,18 @@ resource "aws_networkfirewall_rule_group" "domain_stateful_group" {
   capacity    = var.domain_stateful_rule_group[count.index]["capacity"]
 
   rule_group {
+    dynamic "rule_variables" {
+      for_each  = lookup(var.domain_stateful_rule_group[count.index],"rule_variables",[])
+      content {
+        ip_sets {
+          key = rule_variables.value["key"]
+          ip_set {
+            definition = rule_variables.value["ip_set"]
+          }
+        }
+      }
+    }
+
     rules_source {
       rules_source_list {
         generated_rules_type = var.domain_stateful_rule_group[count.index]["actions"]
@@ -125,8 +137,8 @@ resource "aws_networkfirewall_firewall_policy" "main" {
   name = var.firewall_name
 
   firewall_policy {
-    stateless_default_actions          = ["aws:pass"]
-    stateless_fragment_default_actions = ["aws:drop"]
+    stateless_default_actions          = ["aws:${var.stateless_default_actions}"]
+    stateless_fragment_default_actions = ["aws:${var.stateless_fragment_default_actions}"]  
 
     #Stateless Rule Group Reference
     dynamic "stateless_rule_group_reference" {

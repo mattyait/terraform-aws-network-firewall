@@ -41,3 +41,15 @@ variable "tags" {
   type        = map(any)
   default     = {}
 }
+
+variable "stateless_default_actions" {
+  description = "Default stateless Action"
+  type = string
+  default = "forward_to_sfe"
+}
+
+variable "stateless_fragment_default_actions" {
+  description = "Default Stateless action for fragmented packets"
+  type = string
+  default = "forward_to_sfe"
+}

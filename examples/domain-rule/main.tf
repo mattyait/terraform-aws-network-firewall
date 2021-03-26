@@ -34,6 +34,10 @@ module "network_firewall" {
       domain_list = ["test.example.com", "test1.example.com"]
       actions     = "DENYLIST"
       protocols   = ["HTTP_HOST", "TLS_SNI"]
+      rule_variables = [{
+        key = "HOME_NET"                              #https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateful-rule-groups-domain-names.html#stateful-rule-groups-domain-names-home-net
+        ip_set = ["175.0.0.0/16","195.0.0.0/16"]      #Add this rule_variables if traffic is flowing from other VPC
+      }]
     },
   ]
 
