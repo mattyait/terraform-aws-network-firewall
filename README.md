@@ -5,7 +5,7 @@ AWS Network Firewall Module which creates
 -  Stateful Firewall rule group with 5-tuple option
 -  Stateful Firewall rule group domain option
 -  Stateful firewall rule group with Suricta Compatible IPS rules option
-- Statelless Furewall rule group
+- Statelless Firewall rule group
 - Firewall Policy with attached above rule group
 - Firewall Network
 
