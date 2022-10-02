@@ -1,9 +1,36 @@
-locals {
-  this_stateful_group_arn = concat(aws_networkfirewall_rule_group.suricata_stateful_group.*.arn, aws_networkfirewall_rule_group.domain_stateful_group.*.arn, aws_networkfirewall_rule_group.fivetuple_stateful_group.*.arn)
-  this_stateless_group_arn = concat(aws_networkfirewall_rule_group.stateless_group.*.arn )
+resource "aws_networkfirewall_firewall" "this" {
+  name                = "${var.prefix}-nfw-${var.nfw_name}"
+  description         = coalesce(var.description, var.nfw_name)
+  firewall_policy_arn = aws_networkfirewall_firewall_policy.this.arn
+  vpc_id              = var.vpc_id
+
+  firewall_policy_change_protection = var.firewall_policy_change_protection
+  subnet_change_protection          = var.subnet_change_protection
+
+  dynamic "subnet_mapping" {
+    for_each = toset(var.subnet_mapping)
+
+    content {
+      subnet_id = subnet_mapping.value
+    }
+  }
+
+  tags = var.tags
 }
+# resource "aws_networkfirewall_rule_group" "suricata_stateful_group" {
+#   count = length(var.suricata_stateful_rule_group) > 0 ? length(var.suricata_stateful_rule_group) : 0
+#   type  = "STATEFUL"
+
+#   name        = var.suricata_stateful_rule_group[count.index]["name"]
+#   description = var.suricata_stateful_rule_group[count.index]["description"]
+#   capacity    = var.suricata_stateful_rule_group[count.index]["capacity"]
+#   rules       = try(file(var.suricata_stateful_rule_group[count.index]["rules_file"]), "")
+
+#   tags = merge(var.tags)
+# }
 
 
+################# new suricata rule group #################
 resource "aws_networkfirewall_rule_group" "suricata_stateful_group" {
   count = length(var.suricata_stateful_rule_group) > 0 ? length(var.suricata_stateful_rule_group) : 0
   type  = "STATEFUL"
@@ -11,10 +38,39 @@ resource "aws_networkfirewall_rule_group" "suricata_stateful_group" {
   name        = var.suricata_stateful_rule_group[count.index]["name"]
   description = var.suricata_stateful_rule_group[count.index]["description"]
   capacity    = var.suricata_stateful_rule_group[count.index]["capacity"]
-  rules       = var.suricata_stateful_rule_group[count.index]["rules_file"]
+  rule_group {
+    rules_source {
+      rules_string = try(file(var.suricata_stateful_rule_group[count.index]["rules_file"]), "")
+    }
+    dynamic "rule_variables" {
+      for_each  = lookup(var.suricata_stateful_rule_group[count.index],"rule_variables",{})
+      content {
+        dynamic "ip_sets" {
+          for_each = rule_variables.key == "ip_sets" ? rule_variables.value : []
+          content {
+            key = ip_sets.value["key"]
+            ip_set {
+              definition = ip_sets.value["ip_set"]
+            }
+          }
+        }
+
+        dynamic "port_sets" {
+          for_each = rule_variables.key == "port_sets" ? rule_variables.value : []
+          content {
+            key = port_sets.value["key"]
+            port_set {
+              definition = port_sets.value["port_sets"]
+            }
+          }
+        }
+      }
+    }
+  }
 
   tags = merge(var.tags)
 }
+#####################################################################################
 
 resource "aws_networkfirewall_rule_group" "domain_stateful_group" {
   count = length(var.domain_stateful_rule_group) > 0 ? length(var.domain_stateful_rule_group) : 0
@@ -49,6 +105,7 @@ resource "aws_networkfirewall_rule_group" "domain_stateful_group" {
   tags = merge(var.tags)
 }
 
+
 resource "aws_networkfirewall_rule_group" "fivetuple_stateful_group" {
   count = length(var.fivetuple_stateful_rule_group) > 0 ? length(var.fivetuple_stateful_rule_group) : 0
   type  = "STATEFUL"
@@ -72,7 +129,8 @@ resource "aws_networkfirewall_rule_group" "fivetuple_stateful_group" {
             source_port      = stateful_rule.value.source_port
           }
           rule_option {
-            keyword = "sid:1"
+            keyword = "sid"
+            settings = ["${stateful_rule.value.sid}; msg:\"${try(stateful_rule.value.description,"")}\""]
           }
         }
       }
@@ -105,16 +163,46 @@ resource "aws_networkfirewall_rule_group" "stateless_group" {
                 source {
                   address_definition = stateless_rule.value.source_ipaddress
                 }
-                source_port {
-                  from_port = stateless_rule.value.source_from_port
-                  to_port   = stateless_rule.value.source_to_port
+                #source_port {
+                #  from_port = stateless_rule.value.source_from_port
+                #  to_port   = stateless_rule.value.source_to_port
+                #}
+                # If protocol is TCP : 6 or UDP :17 get source ports from variables and set in source_port block
+                dynamic "source_port" {
+                  for_each = contains(stateless_rule.value.protocols_number, 6) || contains(stateless_rule.value.protocols_number, 17) ? try(toset([{
+                       from = stateless_rule.value.source_from_port, 
+                       to   = stateless_rule.value.source_to_port
+                  }]), [] ) : []
+                  #for_each = try(toset([{
+                  #     from = stateless_rule.value.source_from_port, 
+                  #     to   = stateless_rule.value.source_to_port
+                  #}]), [] )
+                  content {
+                    from_port = source_port.value.from
+                    to_port = source_port.value.to
+                  }
                 }
                 destination {
                   address_definition = stateless_rule.value.destination_ipaddress
                 }
-                destination_port {
-                  from_port = stateless_rule.value.destination_from_port
-                  to_port   = stateless_rule.value.destination_to_port
+                #destination_port {
+                #  from_port = stateless_rule.value.destination_from_port
+                #  to_port   = stateless_rule.value.destination_to_port
+                #}
+                # If protocol is TCP : 6 or UDP :17 get destination ports from variables and set in destination_port block
+                dynamic "destination_port" {
+                  for_each = contains(stateless_rule.value.protocols_number, 6) || contains(stateless_rule.value.protocols_number, 17) ? try(toset([{
+                       from = stateless_rule.value.destination_from_port,
+                       to   = stateless_rule.value.destination_to_port
+                  }]), [] ) : []
+                  #for_each = try(toset([{
+                  #     from = stateless_rule.value.destination_from_port,
+                  #     to   = stateless_rule.value.destination_to_port
+                  #}]), [] )
+                  content {
+                    from_port = destination_port.value.from
+                    to_port = destination_port.value.to
+                  }
                 }
                 protocols = stateless_rule.value.protocols_number
                 tcp_flag {
@@ -132,19 +220,18 @@ resource "aws_networkfirewall_rule_group" "stateless_group" {
 
   tags = merge(var.tags)
 }
-
-resource "aws_networkfirewall_firewall_policy" "main" {
-  name = var.firewall_name
+resource "aws_networkfirewall_firewall_policy" "this" {
+  name = "${var.prefix}-nfw-policy-${var.nfw_name}"
 
   firewall_policy {
     stateless_default_actions          = ["aws:${var.stateless_default_actions}"]
-    stateless_fragment_default_actions = ["aws:${var.stateless_fragment_default_actions}"]  
+    stateless_fragment_default_actions = ["aws:${var.stateless_fragment_default_actions}"]
 
     #Stateless Rule Group Reference
     dynamic "stateless_rule_group_reference" {
       for_each = local.this_stateless_group_arn
       content {
-        # Priority is sequentially as per index in stateless_rule_group list 
+        # Priority is sequentially as per index in stateless_rule_group list
         priority     = index(local.this_stateless_group_arn, stateless_rule_group_reference.value) + 1
         resource_arn = stateless_rule_group_reference.value
       }
@@ -161,16 +248,31 @@ resource "aws_networkfirewall_firewall_policy" "main" {
   tags = merge(var.tags)
 }
 
-resource "aws_networkfirewall_firewall" "main" {
-  name                = var.firewall_name
-  firewall_policy_arn = aws_networkfirewall_firewall_policy.main.arn
-  vpc_id              = var.vpc_id
+###################### Logging Config ######################
 
-  dynamic "subnet_mapping" {
-    for_each = var.subnet_mapping
-    content {
-      subnet_id = subnet_mapping.value.subnet_id
+resource "aws_cloudwatch_log_group" "nfw" {
+  for_each = try(var.logging_config, {})
+  name = "/aws/network-firewall/${each.key}"
+
+  tags = merge(var.tags)
+
+  retention_in_days = each.value.retention_in_days
+}
+
+resource "aws_networkfirewall_logging_configuration" "this" {
+  count = try(length(var.logging_config),0) > 0 ? 1 : 0
+  firewall_arn = aws_networkfirewall_firewall.this.arn
+  logging_configuration {
+    dynamic "log_destination_config" {
+      for_each = var.logging_config
+      content {
+        log_destination = {
+          logGroup = aws_cloudwatch_log_group.nfw[log_destination_config.key].name
+        }
+        log_destination_type = "CloudWatchLogs"
+        log_type             = upper(log_destination_config.key)
+      }
+
     }
   }
-  tags = merge(var.tags)
 }
