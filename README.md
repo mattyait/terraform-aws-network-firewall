@@ -13,7 +13,7 @@ AWS Network Firewall Module which creates
 
     module "network_firewall" {
         source  = "mattyait/network-firewall/aws"
-        version = "0.1.0"
+        version = "0.1.2"
         firewall_name = "example"
         vpc_id        = "vpc-27517c40"
         prefix        = "test"
