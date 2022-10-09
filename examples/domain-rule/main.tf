@@ -1,3 +1,13 @@
+terraform {
+  required_version = ">=1.0.3"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.31.0"
+    }
+  }
+}
+
 provider "aws" {
   region = "ap-southeast-2"
 }
@@ -6,8 +16,11 @@ data "aws_vpc" "default" {
   default = true
 }
 
-data "aws_subnet_ids" "all" {
-  vpc_id = data.aws_vpc.default.id
+data "aws_subnets" "all" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
 }
 
 variable "environment" {
@@ -16,13 +29,15 @@ variable "environment" {
 
 module "network_firewall" {
   source        = "../../"
-  firewall_name = "${var.environment}-example"
+  firewall_name = "example"
   vpc_id        = data.aws_vpc.default.id
+
+  prefix = var.environment
 
   #Passing Individual Subnet ID to have required endpoint
   subnet_mapping = [
-    { subnet_id : tolist(data.aws_subnet_ids.all.ids)[0] },
-    { subnet_id : tolist(data.aws_subnet_ids.all.ids)[1] }
+    tolist(data.aws_subnets.all.ids)[0],
+    tolist(data.aws_subnets.all.ids)[1]
   ]
 
   #Domain Firewall Rule Group
@@ -34,10 +49,23 @@ module "network_firewall" {
       domain_list = ["test.example.com", "test1.example.com"]
       actions     = "DENYLIST"
       protocols   = ["HTTP_HOST", "TLS_SNI"]
-      rule_variables = [{
-        key = "HOME_NET"                              #https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateful-rule-groups-domain-names.html#stateful-rule-groups-domain-names-home-net
-        ip_set = ["175.0.0.0/16","195.0.0.0/16"]      #Add this rule_variables if traffic is flowing from other VPC
-      }]
+      rule_variables = {
+        ip_sets = [{
+          key    = "WEBSERVERS_HOSTS"
+          ip_set = ["10.0.0.0/16", "10.0.1.0/24", "192.168.0.0/16"]
+          },
+          {
+            key    = "EXTERNAL_HOST"
+            ip_set = ["0.0.0.0/0"]
+          }
+        ]
+        port_sets = [
+          {
+            key       = "HTTP_PORTS"
+            port_sets = ["443", "80"]
+          }
+        ]
+      }
     },
   ]
 
@@ -64,7 +92,7 @@ module "network_firewall" {
           type = "pass"
         }
       }]
-    }]
+  }]
 
   tags = {
     Name        = "${var.environment}_example"

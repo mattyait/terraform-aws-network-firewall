@@ -1,6 +1,5 @@
 terraform {
-  experiments = [module_variable_optional_attrs]
-
+  required_version = ">=1.0.3"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -9,5 +8,5 @@ terraform {
   }
 }
 provider "aws" {
-  region = "ap-southeast-1"
+  region = "ap-southeast-2"
 }
