@@ -35,7 +35,7 @@ To run this example you need to execute:
 
         #Domain Firewall Rule Group
         domain_stateful_rule_group = try(concat(each.value.domain_stateful_rule_group, var.domain_stateful_rule_group), [])
-    
+            
         tags = {
             "end_to_end" = "true"
         }
