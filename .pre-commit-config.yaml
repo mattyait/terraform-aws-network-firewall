@@ -32,7 +32,7 @@ repos:
         - id: check-vcs-permalinks
         - id: forbid-new-submodules
         - id: no-commit-to-branch
-    
+            
         # Common errors
         - id: end-of-file-fixer
         - id: trailing-whitespace
@@ -51,4 +51,3 @@ repos:
         - id: detect-aws-credentials
           args: ['--allow-missing-credentials']
         - id: detect-private-key
-        

@@ -6,7 +6,7 @@ variable "stateless_rule_group" {
       description = "Stateless rule example1"
       rule_config = [        
         { 
-          # DROP all ICMP 
+          # DROP all ICMP
           priority              = 1
           protocols_number      = [1] #ICMP
           source_ipaddress      = "0.0.0.0/0"

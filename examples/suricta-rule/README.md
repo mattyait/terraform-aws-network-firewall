@@ -10,8 +10,8 @@ To run this example you need to execute:
 
     terraform init
     terraform plan
-    
-## Module Reference Usage    
+
+## Module Reference Usage
 
     module "network_firewall" {
         source  = "mattyait/network-firewall/aws"
