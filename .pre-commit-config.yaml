@@ -46,7 +46,7 @@ repos:
         - id: check-case-conflict
         - id: mixed-line-ending
           args: [--fix=lf]
-              
+
         # Security
         - id: detect-aws-credentials
           args: ['--allow-missing-credentials']

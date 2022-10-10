@@ -23,10 +23,6 @@ data "aws_subnets" "all" {
   }
 }
 
-variable "environment" {
-  default = "test"
-}
-
 module "network_firewall" {
   source        = "../../"
   firewall_name = "example"
