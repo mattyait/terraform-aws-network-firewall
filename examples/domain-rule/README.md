@@ -11,20 +11,50 @@ To run this example you need to execute:
     terraform init
     terraform plan
 
-## Requirements
+## Module Reference Usage    
 
-| Name | Version |
-|------|---------|
-| terraform | >= 0.14.4 |
+    module "network_firewall" {
+        source  = "mattyait/network-firewall/aws"
+        version = "x.y.z"
+        firewall_name = "example"
+        vpc_id        = "vpc-27517c40"
+        prefix        = "test"
 
-## Inputs
+        #Passing Individual Subnet ID to have required endpoint
+        subnet_mapping = [
+                "subnet-da6b7ebd",
+                "subnet-a256d2fa"
+        ]
 
-No input.
+        #Domain Firewall Rule Group
+        domain_stateful_rule_group = [
+        {
+            capacity    = 100
+            name        = "DOMAINSFEXAMPLE1"
+            description = "Stateful rule example1 with domain list option"
+            domain_list = ["test.example.com", "test1.example.com"]
+            actions     = "DENYLIST"
+            protocols   = ["HTTP_HOST", "TLS_SNI"]
+            rule_variables = {
+                ip_sets = [{
+                    key    = "WEBSERVERS_HOSTS"
+                    ip_set = ["10.0.0.0/16", "10.0.1.0/24", "192.168.0.0/16"]
+                },
+                {
+                    key    = "EXTERNAL_HOST"
+                    ip_set = ["0.0.0.0/0"]
+                }]
+                port_sets = [
+                {
+                    key       = "HTTP_PORTS"
+                    port_sets = ["443", "80"]
+                }]
+            }
+        }]
 
-## Outputs
-
-| Name | Description |
-|------|-------------|
-| this_aws_network_firewall_id| The ID of AWS Network firewall |
-| this_aws_network_firewall_arn | The ARN of the AWS Network firewall |
-| this_aws_network_firewall_endpoint | Endpoint for AWS Network firewall |
+        tags = {
+            Name        = "example"
+            Environment = "test"
+            Created_By  = "Terraform"
+        }
+    }

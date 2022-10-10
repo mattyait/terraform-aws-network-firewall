@@ -11,20 +11,33 @@ To run this example you need to execute:
     terraform init
     terraform plan
 
-## Requirements
+## Module Reference Usage    
 
-| Name | Version |
-|------|---------|
-| terraform | >= 0.14.4 |
+    module "network_firewall" {
+        source  = "mattyait/network-firewall/aws"
+        version = "x.y.z"
+        firewall_name = "example"
+        vpc_id        = "vpc-27517c40"
+        prefix        = "test"
 
-## Inputs
+        #Passing Individual Subnet ID to have required endpoint
+        subnet_mapping = [
+                "subnet-da6b7ebd",
+                "subnet-a256d2fa"
+        ]
 
-No input.
+        #Suricate Firewall Rule Group
+        suricata_stateful_rule_group = [
+        {
+            capacity    = 100
+            name        = "SURICTASFEXAMPLE1"
+            description = "Stateful rule example1 with suricta type"
+            rules_file  = "./example.rules"
+        }]
 
-## Outputs
-
-| Name | Description |
-|------|-------------|
-| this_aws_network_firewall_id| The ID of AWS Network firewall |
-| this_aws_network_firewall_arn | The ARN of the AWS Network firewall |
-| this_aws_network_firewall_endpoint | Endpoint for AWS Network firewall |
+        tags = {
+            Name        = "example"
+            Environment = "test"
+            Created_By  = "Terraform"
+        }
+    }
