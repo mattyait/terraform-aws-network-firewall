@@ -10,7 +10,7 @@ AWS Network Firewall Module which creates
 - Firewall Network
 
 ## Usage
-
+    ```hcl
     module "network_firewall" {
         source  = "mattyait/network-firewall/aws"
         version = "0.1.2"
@@ -76,6 +76,7 @@ AWS Network Firewall Module which creates
             Created_By  = "Terraform"
         }
     }
+    ```
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
