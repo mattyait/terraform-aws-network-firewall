@@ -48,7 +48,7 @@ Looking at the existing issues is a great way to find something to contribute on
 This project has adopted the [Contributor Covenant][homepage], version 2.1, available at https://www.contributor-covenant.org/version/2/1/code_of_conduct.html
 
 [homepage]: https://www.contributor-covenant.org
-                             
+
 For answers to common questions about this code of conduct, see https://www.contributor-covenant.org/faq
 
 
