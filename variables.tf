@@ -10,26 +10,32 @@ variable "tags" {
 }
 
 variable "description" {
-  default = ""
+  description = "Description for the resources"
+  default     = ""
+  type        = string
 }
 
 variable "fivetuple_stateful_rule_group" {
   description = "Config for 5-tuple type stateful rule group"
   default     = []
+  type        = any
 }
 
 variable "domain_stateful_rule_group" {
   description = "Config for domain type stateful rule group"
   default     = []
+  type        = any
 }
 
 variable "suricata_stateful_rule_group" {
   description = "Config for Suricata type stateful rule group"
   default     = []
+  type        = any
 }
 
 variable "stateless_rule_group" {
   description = "Config for stateless rule group"
+  type        = any
 }
 
 variable "firewall_name" {
@@ -40,6 +46,7 @@ variable "firewall_name" {
 
 variable "subnet_mapping" {
   description = "Subnet ids mapping to have individual firewall endpoint"
+  type        = list(string)
 }
 
 variable "vpc_id" {
@@ -72,6 +79,7 @@ variable "subnet_change_protection" {
 }
 
 variable "logging_config" {
-  type    = map(any)
-  default = {}
+  description = "logging config for cloudwatch logs created for network firewall"
+  type        = map(any)
+  default     = {}
 }
