@@ -84,13 +84,13 @@ module "network_firewall" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.0.3 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.31.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.50.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 4.31.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 4.50.0 |
 
 ## Modules
 
@@ -113,6 +113,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_aws_managed_rule_group"></a> [aws\_managed\_rule\_group](#input\_aws\_managed\_rule\_group) | List of AWS managed rule group arn | `list(any)` | `[]` | no |
 | <a name="input_description"></a> [description](#input\_description) | Description for the resources | `string` | `""` | no |
 | <a name="input_domain_stateful_rule_group"></a> [domain\_stateful\_rule\_group](#input\_domain\_stateful\_rule\_group) | Config for domain type stateful rule group | `any` | `[]` | no |
 | <a name="input_firewall_name"></a> [firewall\_name](#input\_firewall\_name) | firewall name | `string` | `"example"` | no |
