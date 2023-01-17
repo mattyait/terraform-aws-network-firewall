@@ -3,7 +3,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.31.0"
+      version = "~> 4.50.0"
     }
   }
 }
@@ -35,6 +35,8 @@ module "network_firewall" {
     tolist(data.aws_subnets.all.ids)[0],
     tolist(data.aws_subnets.all.ids)[1]
   ]
+  # AWS Managed rule group
+  aws_managed_rule_group = ["arn:aws:network-firewall:ap-southeast-2:aws-managed:stateful-rulegroup/AbusedLegitBotNetCommandAndControlDomainsActionOrder"]
 
   #Suricate Firewall Rule Group
   suricata_stateful_rule_group = [

@@ -83,3 +83,9 @@ variable "logging_config" {
   type        = map(any)
   default     = {}
 }
+
+variable "aws_managed_rule_group" {
+  description = "List of AWS managed rule group arn"
+  type        = list(any)
+  default     = []
+}
