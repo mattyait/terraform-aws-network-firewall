@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1](https://github.com/mattyait/terraform-aws-network-firewall/compare/v0.2.0...v0.2.1) (2023-02-20)
+
+
+### Bug Fixes
+
+* Output returning firewall state and firewall endpoint with AZ as map ([#12](https://github.com/mattyait/terraform-aws-network-firewall/issues/12)) ([7189117](https://github.com/mattyait/terraform-aws-network-firewall/commit/7189117439ddab000834cfca523c44e20c0fc80f))
+
 ## [0.2.0](https://github.com/mattyait/terraform-aws-network-firewall/compare/v0.1.3...v0.2.0) (2023-01-17)
 
 
