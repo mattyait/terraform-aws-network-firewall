@@ -136,5 +136,8 @@ No modules.
 |------|-------------|
 | <a name="output_arn"></a> [arn](#output\_arn) | Created Network Firewall ARN from network\_firewall module |
 | <a name="output_endpoint_id"></a> [endpoint\_id](#output\_endpoint\_id) | Created Network Firewall endpoint id |
+| <a name="output_endpoint_id_az"></a> [endpoint\_id\_az](#output\_endpoint\_id\_az) | Map value with Availability Zone and Firewall endpoint id |
 | <a name="output_id"></a> [id](#output\_id) | Created Network Firewall ID from network\_firewall module |
+| <a name="output_subnet_id"></a> [subnet\_id](#output\_subnet\_id) | Created Network Firewall subnet id |
+| <a name="output_sync_states"></a> [sync\_states](#output\_sync\_states) | Created Network Firewall states |
 <!-- END_TF_DOCS -->
