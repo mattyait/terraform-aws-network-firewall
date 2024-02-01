@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0](https://github.com/mattyait/terraform-aws-network-firewall/compare/v0.2.1...v0.3.0) (2024-02-01)
+
+
+### Features
+
+* Making version requirement flexible instead of prefer specific ([#16](https://github.com/mattyait/terraform-aws-network-firewall/issues/16)) ([1f03cbe](https://github.com/mattyait/terraform-aws-network-firewall/commit/1f03cbe94ab9716068937e38bf8709fd337339b3))
+
 ## [0.2.1](https://github.com/mattyait/terraform-aws-network-firewall/compare/v0.2.0...v0.2.1) (2023-02-20)
 
 
